@@ -1,15 +1,15 @@
 INFO:     Will watch for changes in these directories: ['/home/workspace']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [146] using StatReload
-INFO:     Started server process [148]
+INFO:     Started reloader process [197] using StatReload
+INFO:     Started server process [199]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     172.20.0.1:57888 - "GET /labels HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:57902 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:57888 - "GET /labels HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:57902 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:57912 - "HEAD / HTTP/1.1" 405 Method Not Allowed
-INFO:     172.20.0.1:54884 - "GET /labels HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:54890 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:54896 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
-INFO:     172.20.0.1:54904 - "GET /labels HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:57222 - "GET /labels HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:57232 - "GET /labels HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:57236 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:57250 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:57256 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+INFO:     172.20.0.1:53536 - "GET /labels HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:53548 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:53556 - "GET /labels HTTP/1.1" 500 Internal Server Error
+INFO:     172.20.0.1:53562 - "GET /links?sort=popular HTTP/1.1" 500 Internal Server Error

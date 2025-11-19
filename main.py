@@ -79,13 +79,45 @@ def test_database():
     return response
 
 # -----------------------------
+# Users API (simple accounts)
+# -----------------------------
+class UserIn(BaseModel):
+    name: str
+    email: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+@app.post("/users")
+def create_user(user: UserIn):
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    data = user.model_dump()
+    # Ensure unique by email if provided
+    if data.get("email"):
+        exists = db["user"].find_one({"email": data["email"]})
+        if exists:
+            return serialize_doc(exists)
+    try:
+        user_id = create_document("user", data)
+        doc = db["user"].find_one({"_id": ObjectId(user_id)})
+        return serialize_doc(doc)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/users")
+def list_users(limit: int = Query(100, ge=1, le=500)):
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    cursor = db["user"].find({}).sort([("created_at", -1)]).limit(limit)
+    return [serialize_doc(d) for d in cursor]
+
+# -----------------------------
 # Links API
 # -----------------------------
 @app.post("/links")
 def create_link(payload: LinkCreate):
     data = payload.model_dump()
     data["clicks"] = 0
-    # Normalize labels: strip spaces, lower for grouping, but store display as given
+    # Normalize labels: strip spaces
     labels = [l.strip() for l in (data.get("labels") or []) if l.strip()]
     data["labels"] = labels
     try:
@@ -130,6 +162,43 @@ def increment_click(link_id: str):
     if not res:
         raise HTTPException(status_code=404, detail="Link not found")
     return serialize_doc(res)
+
+class LinkUpdate(BaseModel):
+    title: Optional[str] = None
+    url: Optional[str] = None
+    labels: Optional[List[str]] = None
+    description: Optional[str] = None
+
+@app.put("/links/{link_id}")
+def update_link(link_id: str, payload: LinkUpdate):
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    if not ObjectId.is_valid(link_id):
+        raise HTTPException(status_code=400, detail="Invalid link id")
+    update_data = {k: v for k, v in payload.model_dump(exclude_none=True).items()}
+    if "labels" in update_data and update_data["labels"] is not None:
+        update_data["labels"] = [l.strip() for l in update_data["labels"] if l and l.strip()]
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    res = db["link"].find_one_and_update(
+        {"_id": ObjectId(link_id)},
+        {"$set": {**update_data, "updated_at": db.command("serverStatus")["localTime"]}},
+        return_document=True
+    )
+    if not res:
+        raise HTTPException(status_code=404, detail="Link not found")
+    return serialize_doc(res)
+
+@app.delete("/links/{link_id}")
+def delete_link(link_id: str):
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    if not ObjectId.is_valid(link_id):
+        raise HTTPException(status_code=400, detail="Invalid link id")
+    res = db["link"].delete_one({"_id": ObjectId(link_id)})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Link not found")
+    return {"ok": True}
 
 @app.get("/labels")
 def list_labels():
